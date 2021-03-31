@@ -43,10 +43,10 @@ public class FileManager
             }
             else
             {
-                for (int i = graph.getNodes().Count; i <= int.Parse(node[0]); i++)
+                /*for (int i = graph.getNodes().Count; i <= int.Parse(node[0]); i++)
                 {
                     graph.AddNode(null);
-                }
+                }*/
                 graph.AddNode(int.Parse(node[0]), new Node(int.Parse(node[0]), vector3));
             }
         }

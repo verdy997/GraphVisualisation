@@ -16,6 +16,13 @@ public class Graph
 
     public void AddNode(int position, Node node)
     {
+        if (nodes.Count < position)
+        {
+            for (int i = nodes.Count; i <= position; i++)
+            {
+                AddNode(null);
+            }
+        }
         nodes[position] = node;
     }
     
@@ -51,7 +58,7 @@ public class Graph
 
     public void DeleteNode(int position)
     {
-        DeleteEdges(position);
+        DeleteEdgesByNID(position);
         nodes[position] = null;
         if (!freePositions.Contains(position))
         {
@@ -59,9 +66,9 @@ public class Graph
         }
     }
 
-    public void DeleteEdges(int idNode)
+    public void DeleteEdgesByNID(int idNode)
     {
-        for (int i = 0; i <= edges.Count; i++)
+        for (int i = 0; i < edges.Count; i++)
         {
             if (edges[i].Node1.ID == idNode || edges[i].Node2.ID == idNode)
             {
@@ -70,13 +77,21 @@ public class Graph
         }
     }
 
-    public int? findFreePosition()
+    public void DeleteNodes()
     {
-        if (freePositions == null || freePositions.Count == 0)
+        for (int i = 0; i < nodes.Count; i++)
         {
-            return null;
+            nodes.RemoveAt(i);
         }
-        return freePositions[0];
+    }
+
+    public void DeleteEdges()
+    {
+        for (int i = 0; i < edges.Count; i++)
+        {
+            edges.RemoveAt(i);
+        }
     }
     
+
 }

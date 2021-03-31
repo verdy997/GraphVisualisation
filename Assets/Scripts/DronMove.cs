@@ -14,29 +14,34 @@ public class DronMove : MonoBehaviour
     
     void Update()
     {
+
         if (Input.GetKey(KeyCode.D)) 
         {
-            rb.AddRelativeForce(new Vector3(2, 0, 0)); 
+            rb.AddRelativeForce(new Vector3(5, 0, 0)); 
         }
         if (Input.GetKey(KeyCode.A))
         {
-            rb.AddRelativeForce(new Vector3(-2, 0, 0));
+            rb.AddRelativeForce(new Vector3(-5, 0, 0));
         }
         if (Input.GetKey(KeyCode.W))
         {
-            rb.AddRelativeForce(new Vector3(0, 0, 2));
+            rb.AddRelativeForce(new Vector3(0, 0, 5));
         }
         if (Input.GetKey(KeyCode.S))
         {
-            rb.AddRelativeForce(new Vector3(0, 0, -2));
+            rb.AddRelativeForce(new Vector3(0, 0, -5));
         }
         if (Input.GetKey(KeyCode.Q))
         {
-            rb.AddRelativeForce(new Vector3(0, -2, 0));
+            rb.AddRelativeForce(new Vector3(0, -5, 0));
         }
         if (Input.GetKey(KeyCode.E))
         {
-            rb.AddRelativeForce(new Vector3(0, 2, 0));
+            rb.AddRelativeForce(new Vector3(0, 5, 0));
+        }
+        if (Input.GetKey(KeyCode.R))
+        {
+            rb.velocity = Vector3.zero;
         }
     }
 }

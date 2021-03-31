@@ -62,6 +62,7 @@
      <Compile Include="Assets\Scripts\DronMove.cs" />
      <Compile Include="Assets\Scripts\Edge.cs" />
      <Compile Include="Assets\Scripts\ErrorMessage.cs" />
+     <Compile Include="Assets\Scripts\EventListener.cs" />
      <Compile Include="Assets\Scripts\FileManager.cs" />
      <Compile Include="Assets\Scripts\Graph.cs" />
      <Compile Include="Assets\Scripts\GraphRepresentation.cs" />
