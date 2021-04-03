@@ -7,7 +7,7 @@ public class CameraMove : MonoBehaviour
     private float posX;
     private float posY;
     public GameObject sphere;
-    public EventListener el;
+    public GUI_EL el;
     private float mouseSensitiviti = 8;
     private bool stop = true;
     
@@ -23,7 +23,7 @@ public class CameraMove : MonoBehaviour
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition);
 
-            if (Physics.Raycast (ray, out hit, 300.0f))
+            if (Physics.Raycast (ray, out hit, 1500.0f))
             {
                 el.ShowInfo(hit.transform.gameObject);
             }

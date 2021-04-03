@@ -6,7 +6,8 @@ public class Graph
 {
     private List<Node> nodes { get; set; }
     private List<Edge> edges { get; set; }
-    private List<int> freePositions { get; set; }
+    //private List<int> freePositions { get; set; }
+
 
     public Graph()
     {
@@ -36,10 +37,10 @@ public class Graph
         edges.Add(edge);
     }
 
-    public void AddPosition(int position)
+    /*public void AddPosition(int position)
     {
         freePositions.Add(position);
-    }
+    }*/
 
     public List<Node> getNodes()
     {
@@ -51,12 +52,12 @@ public class Graph
         return edges;
     }
 
-    public List<int> getFreePositions()
+    /*public List<int> getFreePositions()
     {
         return freePositions;
-    }
+    }*/
 
-    public void DeleteNode(int position)
+    /*public void DeleteNode(int position)
     {
         DeleteEdgesByNID(position);
         nodes[position] = null;
@@ -64,7 +65,7 @@ public class Graph
         {
             freePositions.Add(position);
         }
-    }
+    }*/
 
     public void DeleteEdgesByNID(int idNode)
     {

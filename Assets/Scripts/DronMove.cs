@@ -17,27 +17,27 @@ public class DronMove : MonoBehaviour
 
         if (Input.GetKey(KeyCode.D)) 
         {
-            rb.AddRelativeForce(new Vector3(5, 0, 0)); 
+            rb.AddRelativeForce(new Vector3(50, 0, 0)); 
         }
         if (Input.GetKey(KeyCode.A))
         {
-            rb.AddRelativeForce(new Vector3(-5, 0, 0));
+            rb.AddRelativeForce(new Vector3(-50, 0, 0));
         }
         if (Input.GetKey(KeyCode.W))
         {
-            rb.AddRelativeForce(new Vector3(0, 0, 5));
+            rb.AddRelativeForce(new Vector3(0, 0, 50));
         }
         if (Input.GetKey(KeyCode.S))
         {
-            rb.AddRelativeForce(new Vector3(0, 0, -5));
+            rb.AddRelativeForce(new Vector3(0, 0, -50));
         }
         if (Input.GetKey(KeyCode.Q))
         {
-            rb.AddRelativeForce(new Vector3(0, -5, 0));
+            rb.AddRelativeForce(new Vector3(0, -50, 0));
         }
         if (Input.GetKey(KeyCode.E))
         {
-            rb.AddRelativeForce(new Vector3(0, 5, 0));
+            rb.AddRelativeForce(new Vector3(0, 50, 0));
         }
         if (Input.GetKey(KeyCode.R))
         {

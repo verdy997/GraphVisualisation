@@ -5,16 +5,20 @@ using UnityEngine;
 public class Node
 {
     private List<Node> iNodes { get; set;}
+    private List<Edge> iEdges { get; set;}
     private int id;
     private Vector3 vector3;
     private Vector3 forceVector3;
+    private string region;
+    private int degree;
 
-    public Node(int id, Vector3 vector3)
+    public Node(int id, Vector3 vector3, string region)
     {
         this.id = id;
         this.vector3 = vector3;
         this.iNodes = new List<Node>();
-        
+        this.iEdges = new List<Edge>();
+        this.region = region;
     }
 
     public int ID
@@ -31,6 +35,18 @@ public class Node
     public Vector3 ForceVector3
     {
         get => forceVector3;
+    }
+
+    public string Region
+    {
+        get => region;
+        set => region = value;
+    }
+
+    public int Degree
+    {
+        get => degree;
+        set => degree = value;
     }
 
     public void setVector3(float x, float y, float z)
@@ -55,6 +71,16 @@ public class Node
     public List<Node> getiNodes()
     {
         return iNodes;
+    }
+    
+    public void AddiEdge(Edge edge)
+    {
+        iEdges.Add(edge);
+    }
+    
+    public List<Edge> getiEdges()
+    {
+        return iEdges;
     }
     
     public Node getiNodeByID(int searchingID)

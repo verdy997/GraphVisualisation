@@ -11,26 +11,25 @@ public class GraphRepresentation : MonoBehaviour
 {
     public GameObject node;
     public GameObject edge;
-    public GameObject emWrongFormat;
-    public GameObject emNoPaths;
+    public GameObject edgeBil;
     public GameObject emNoNode;
-    public int from;
-    public int to;
+    public int from = 0;
+    public int to = 0;
     public GameObject ifFrom;
     public GameObject ifTo;
     public GameObject ifFirstN;
-    
-    
-    private FileManager fm;
+
+
+    //private FileManager fm;
     private List<GameObject> goEdges;
     private List<GameObject> goNodes;
     private Graph graph;
-    private float maxDSquared = 10;
-    private string pathToEdges;
-    private string pathToNodes;
+    private float maxDSquared = 50;
     private string neighbor;
     private Ray ray;
     private RaycastHit hit;
+    private int control = 0;
+    private bool stop = false;
 
     // Start is called before the first frame update
     void Start()
@@ -40,14 +39,12 @@ public class GraphRepresentation : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
-        if (graph != null)
+        if (graph != null && !stop)
         {
             if ((goNodes.Count != 0) && (goEdges.Count != 0))
             {
-                
                 ForceDirect();
-
+                ControlIteration();
                 //update of nodes (gameobjects)
                 foreach (var node in goNodes)
                 {
@@ -73,6 +70,20 @@ public class GraphRepresentation : MonoBehaviour
         }
     }
 
+    private void ControlIteration()
+    {
+        control++;
+        if (control == 70)
+        {
+            stop = true;
+        }
+    }
+
+    public void setStop(bool s)
+    {
+        stop = s;
+    }
+
     public Graph getGraph()
     {
         return graph;
@@ -83,20 +94,10 @@ public class GraphRepresentation : MonoBehaviour
         return goEdges;
     }
 
-    public void FindNodes()
-    {
-        pathToNodes = EditorUtility.OpenFilePanel("Searching for nodes", "", "txt");
-    }
-
-    public void FindEdges()
-    {
-        pathToEdges = EditorUtility.OpenFilePanel("Searching for edges", "", "txt");
-    }
-
     public void setRange()
     {
         int value;
-        if (int.TryParse(ifFrom.GetComponent<Text>().text, out value) && 
+        if (int.TryParse(ifFrom.GetComponent<Text>().text, out value) &&
             int.TryParse(ifTo.GetComponent<Text>().text, out value))
         {
             int fromInt = int.Parse(ifFrom.GetComponent<Text>().text);
@@ -107,11 +108,11 @@ public class GraphRepresentation : MonoBehaviour
     private void AddNewNode(int id)
     {
         Random rnd = new Random((int) DateTime.Now.Ticks & 0x0000FFFF);
-        float x = rnd.Next(0, 1000)/100;
-        float y = rnd.Next(0, 1000)/100;
-        float z = rnd.Next(0, 1000)/100;
+        float x = rnd.Next(0, 1000) / 100;
+        float y = rnd.Next(0, 1000) / 100;
+        float z = rnd.Next(0, 1000) / 100;
         Vector3 v3 = new Vector3(x, y, z);
-        Node n1 = new Node(id, v3);
+        Node n1 = new Node(id, v3, "null");
         if (id == graph.getNodes().Count)
         {
             graph.AddNode(n1);
@@ -120,7 +121,6 @@ public class GraphRepresentation : MonoBehaviour
         {
             graph.AddNode(id, n1);
         }
-
     }
 
     private Edge CreateEdge(Node n1, Node n2)
@@ -130,7 +130,7 @@ public class GraphRepresentation : MonoBehaviour
         Edge e1 = new Edge(n1, n2, n1.Vector3);
         return e1;
     }
-    
+
     private void AddNewEdge(Edge e)
     {
         graph.AddEdge(e);
@@ -139,14 +139,40 @@ public class GraphRepresentation : MonoBehaviour
     private void DrawNode(Node n)
     {
         GameObject newNode = Instantiate(node, n.Vector3, Quaternion.Euler(0f, 0f, 0f));
+        if (n.Degree > 0)
+        {
+            newNode.transform.localScale = new Vector3((n.Degree / 1000f), (n.Degree / 1000f), (n.Degree / 1000f));
+        }
         newNode.name = n.ID.ToString();
         goNodes.Add(newNode);
     }
 
     private void DrawEdge(Edge e)
     {
-        GameObject newEdge = Instantiate(edge, e.Vector3, Quaternion.Euler(0f, 0f, 0f));
+        GameObject newEdge;
+        if (e.isBilateral())
+        {
+            newEdge = Instantiate(edgeBil, e.Vector3, Quaternion.Euler(0f, 0f, 0f));
+            if (e.Weight > 0)
+            {
+                newEdge.transform.localScale = new Vector3((e.Weight / 1000f), (e.Weight / 1000f), 1);
+            }
+        }
+        else
+        {
+            newEdge = Instantiate(edge, e.Vector3, Quaternion.Euler(0f, 0f, 0f));
+            if (e.Weight > 0)
+            {
+                newEdge.transform.localScale = new Vector3((e.Weight / 1000f), (e.Weight / 1000f), 1);
+            }
+        }
+
         newEdge.name = "." + e.Node1.ID.ToString() + ".-." + e.Node2.ID.ToString() + ".";
+        newEdge.transform.LookAt(e.Node2.Vector3);
+        float distance = Vector3.Distance(e.Node1.Vector3, e.Node2.Vector3);
+        Vector3 newZ = newEdge.transform.localScale;
+        newZ.z = distance / 2;
+        newEdge.transform.localScale = newZ;
         goEdges.Add(newEdge);
     }
 
@@ -167,9 +193,8 @@ public class GraphRepresentation : MonoBehaviour
                 {
                     emNoNode.SetActive(true);
                     return;
-                    //AddNewNode(n2ID);
-                    //DrawNode(graph.getNodes()[n2ID]);
                 }
+
                 AddNewEdgeToGraph(n1ID, n2ID);
             }
         }
@@ -189,12 +214,12 @@ public class GraphRepresentation : MonoBehaviour
             int.TryParse(ifTo.GetComponent<Text>().text, out value))
         {
             AddNewEdgeToGraph(int.Parse(ifFrom.GetComponent<Text>().text), int.Parse(ifTo.GetComponent<Text>().text));
-        } else
+        }
+        else
         {
             emNoNode.SetActive(true);
             return;
         }
-        
     }
 
     public void AddNewEdgeToGraph(int node1ID, int node2ID)
@@ -214,41 +239,176 @@ public class GraphRepresentation : MonoBehaviour
                 }
             }
         }
+
         emNoNode.SetActive(true);
     }
 
-    public void CreateGraph()
+    public void CreateGraph(Graph g)
     {
         if (graph != null)
         {
             DeleteGraph();
         }
-        
-        graph = new Graph();
+
+        graph = g;
         goEdges = new List<GameObject>();
         goNodes = new List<GameObject>();
-        if (pathToEdges == null || pathToNodes == null)
+
+        GeographicGraph(graph);
+        
+        DrawGraph(graph);
+    }
+
+    public void DHYB_w(Graph g, double w)
+    {
+        Debug.Log(g.getEdges().Count);
+        Random rnd = new Random();
+        //delection of random vertex/edge (modified)
+        foreach (var nodeG in g.getNodes())
         {
-            emNoPaths.SetActive(true);
-            return;
+            int tmp = rnd.Next(0, 100);
+            if ((double)(tmp / 100) < w && nodeG != null)
+            {
+                int nLength = nodeG.getiNodes().Count;
+                for (int i = 0; i < nodeG.getiEdges().Count; i++)
+                {
+                    tmp = rnd.Next(0, 100);
+                    if ((double)(tmp / 100) < w)
+                    {
+                        int posDel = g.getEdges().IndexOf(nodeG.getiEdges()[i]);
+                        if (posDel >= 0 && (g.getEdges()[posDel].Node1.getiEdges().Count > 1 &&
+                                            g.getEdges()[posDel].Node2.getiEdges().Count > 1))
+                        {
+                            Edge re = g.getEdges()[posDel];
+                            g.getEdges()[posDel].Node1.getiNodes().Remove(g.getEdges()[posDel].Node2);
+                            g.getEdges()[posDel].Node2.getiNodes().Remove(g.getEdges()[posDel].Node1);
+                            g.getEdges()[posDel].Node1.getiEdges().Remove(re);
+                            g.getEdges()[posDel].Node2.getiEdges().Remove(re);
+                            g.getEdges().RemoveAt(posDel);
+                        }
+                    }
+                }
+            }
         }
 
-        fm = new FileManager(pathToNodes, pathToEdges);
-        if (!fm.readNodes(graph) || !fm.readEdges(graph))
+        if (g.getEdges().Count > g.getNodes().Count*2)
         {
-            emWrongFormat.SetActive(true);
-            return;
+            foreach (var edgeG in g.getEdges().ToList())
+            {
+                int tmp = rnd.Next(0, 100);
+                if ((double)(tmp/100) < (1 - w))
+                {
+                    if (edgeG.Node1.getiEdges().Count > 1 && edgeG.Node2.getiEdges().Count > 1 )
+                    {
+                        edgeG.Node1.getiNodes().Remove(edgeG.Node2);
+                        edgeG.Node2.getiNodes().Remove(edgeG.Node1);
+                        edgeG.Node1.getiEdges().Remove(edgeG);
+                        edgeG.Node2.getiEdges().Remove(edgeG);
+                        g.getEdges().Remove(edgeG);
+                    }
+                }
+            }
+        }
+        
+        Debug.Log(g.getEdges().Count);
+    }
+
+    public void GeographicGraph(Graph g)
+    {
+        List<string> regions = new List<string>();
+        List<int> density = new List<int>();
+
+        foreach (var gnode in g.getNodes())
+        {
+            if (gnode != null)
+            {
+                if (!regions.Contains(gnode.Region))
+                {
+                    regions.Add(gnode.Region);
+                    density.Add(1);
+                }
+                else
+                {
+                    int pos = regions.IndexOf(gnode.Region);
+                    int newDen = density[pos];
+                    newDen++;
+                    density[pos] = newDen;
+                }
+            }
         }
 
-        //List<Node> nodes = graph.getNodes();
+        int[,] adjMatrix = new int[regions.Count,regions.Count];
+        foreach (var gedge in g.getEdges())
+        {
+            int pos1 = regions.IndexOf(gedge.Node1.Region);
+            int pos2 = regions.IndexOf(gedge.Node2.Region);
+            adjMatrix[pos1,pos2] += 1;
+        }
 
-        foreach (Node nodeInc in graph.getNodes())
+        Graph geoGraph = new Graph();
+        for (int i = 0; i < regions.Count; i++)
+        {
+            Random rnd = new Random();
+            float x = rnd.Next(0, 9000)/100;
+            float y = rnd.Next(0, 9000)/100;
+            float z = rnd.Next(0, 9000)/100;
+            Vector3 vector3 = new Vector3(x, y, z);
+            Node n1 = new Node(i, vector3, regions[i]);
+            n1.Degree = density[i];
+            geoGraph.AddNode(n1);
+        }
+
+        for (int i = 0; i < regions.Count; i++)
+        {
+            for (int j = 0; j < regions.Count; j++)
+            {
+                if (geoGraph.getNodes()[i] != geoGraph.getNodes()[j])
+                {
+                    Node n1 = geoGraph.getNodes()[i];
+                    Node n2 = geoGraph.getNodes()[j];
+                    if (n1.getiNodes().Contains(n2))
+                    {
+                        for (int k = 0; k < n1.getiEdges().Count; k++)
+                        {
+                            if (n1.getiEdges()[k].Node1 == n2)
+                            {
+                                n1.getiEdges()[k].Weight += adjMatrix[j, i];
+                                n1.getiEdges()[k].setBilateral(true);
+                                break;
+                            }
+                            else if (n1.getiEdges()[k].Node2 == n2)
+                            {
+                                n1.getiEdges()[k].Weight += adjMatrix[i, j];
+                                n1.getiEdges()[k].setBilateral(true);
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        n1.AddiNode(n2);
+                        n2.AddiNode(n1);
+                        Edge e = new Edge(n1, n2, n1.Vector3);
+                        geoGraph.AddEdge(e);
+                        n1.AddiEdge(e);
+                        n2.AddiEdge(e);
+                    }
+                }
+            }
+        }
+
+        graph = geoGraph;
+        //DHYB_w(graph, 0.6);
+        
+    }
+
+    public void DrawGraph(Graph g)
+    {
+        foreach (Node nodeInc in g.getNodes())
         {
             if (nodeInc != null)
             {
-                GameObject newNode = Instantiate(node, nodeInc.Vector3, Quaternion.Euler(0f, 0f, 0f));
-                newNode.name = nodeInc.ID.ToString();
-                goNodes.Add(newNode);
+                DrawNode(nodeInc);
             }
             else
             {
@@ -256,26 +416,18 @@ public class GraphRepresentation : MonoBehaviour
             }
         }
 
-        //List<Edge> edges = graph.getEdges();
-        foreach (Edge edgeInc in graph.getEdges())
+        foreach (Edge edgeInc in g.getEdges())
         {
-            GameObject newEdge = Instantiate(edge, edgeInc.Vector3, Quaternion.Euler(0f, 0f, 0f));
-            newEdge.name = "edge" + edgeInc.Node1.ID.ToString() + "-" + edgeInc.Node2.ID.ToString();
-            newEdge.transform.LookAt(edgeInc.Node2.Vector3);
-            float distance = Vector3.Distance(edgeInc.Node1.Vector3, edgeInc.Node2.Vector3);
-            Vector3 newZ = newEdge.transform.localScale;
-            newZ.z = distance / 2;
-            newEdge.transform.localScale = newZ;
-            goEdges.Add(newEdge);
+            DrawEdge(edgeInc);
         }
     }
 
     void ForceDirect()
     {
-        int _L = 150; //spring rest length
-        int _K_r = 200; //repulsive force constant
-        float _K_s = 1; //spring constant
-        float delta_t = 0.0005f; //time step
+        int _L = 100; //spring rest length 200
+        int _K_r = 5000; //repulsive force constant 200
+        float _K_s = 1; //spring constant 1
+        float delta_t = 0.05f; //time step 0.005
         int _N = graph.getNodes().Count;
 
         //inicializacia net force
@@ -325,9 +477,19 @@ public class GraphRepresentation : MonoBehaviour
 
                 if (dv3.x != 0 && dv3.y != 0 && dv3.z != 0)
                 {
+                    int max;
+                    if (Mathf.Min(node1.getiNodes().Count, node2.getiNodes().Count) > 50)
+                    {
+                        max = 50;
+                    }
+                    else
+                    {
+                        max = Mathf.Min(node1.getiNodes().Count, node2.getiNodes().Count);
+                    }
+
                     float distanceSquared = dv3.x * dv3.x + dv3.y * dv3.y + dv3.z * dv3.z;
                     float distance = Mathf.Sqrt(distanceSquared);
-                    float force = _K_r / distanceSquared;
+                    float force = (_K_r * max) / distanceSquared;
                     Vector3 fv3 = force * dv3 / distance;
                     node1.setForceVector3(node1.ForceVector3.x - fv3.x,
                         node1.ForceVector3.y - fv3.y,
@@ -380,6 +542,7 @@ public class GraphRepresentation : MonoBehaviour
                             node2.ForceVector3.y + fv3.y,
                             node2.ForceVector3.z + fv3.z);
                     }
+
                     else
                     {
                         node1.setForceVector3(node1.ForceVector3.x - 0.001f,
@@ -426,7 +589,7 @@ public class GraphRepresentation : MonoBehaviour
             node.setVector3((node.Vector3.x + dv3.x), (node.Vector3.y + dv3.y), (node.Vector3.z + dv3.z));
         }
     }
-    
+
     public void DeleteGraph()
     {
         graph.DeleteEdges();
