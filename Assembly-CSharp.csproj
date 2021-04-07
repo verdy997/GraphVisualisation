@@ -60,14 +60,14 @@
   <ItemGroup>
      <Compile Include="Assets\Scripts\CameraMove.cs" />
      <Compile Include="Assets\Scripts\DronMove.cs" />
-     <Compile Include="Assets\Scripts\Edge.cs" />
-     <Compile Include="Assets\Scripts\ErrorMessage.cs" />
-     <Compile Include="Assets\Scripts\FileManager.cs" />
+     <Compile Include="Assets\Scripts\EdgeData.cs" />
+     <Compile Include="Assets\Scripts\FileManager2.cs" />
      <Compile Include="Assets\Scripts\GUI_EL.cs" />
-     <Compile Include="Assets\Scripts\Graph.cs" />
-     <Compile Include="Assets\Scripts\GraphRepresentation.cs" />
+     <Compile Include="Assets\Scripts\GraphData.cs" />
+     <Compile Include="Assets\Scripts\GraphRepresentation2.cs" />
      <Compile Include="Assets\Scripts\MainMenu.cs" />
-     <Compile Include="Assets\Scripts\Node.cs" />
+     <Compile Include="Assets\Scripts\NodeData.cs" />
+     <Compile Include="Assets\Scripts\Subgraph.cs" />
      <None Include="Assets\Scripts\Data\nodes3.txt" />
      <None Include="Assets\Scripts\Data\nodes.txt" />
      <None Include="Assets\Scripts\Data\realDataEdges.txt" />
