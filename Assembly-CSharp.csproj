@@ -62,6 +62,7 @@
      <Compile Include="Assets\Scripts\DronMove.cs" />
      <Compile Include="Assets\Scripts\EdgeData.cs" />
      <Compile Include="Assets\Scripts\FileManager2.cs" />
+     <Compile Include="Assets\Scripts\ForceDirected.cs" />
      <Compile Include="Assets\Scripts\GUI_EL.cs" />
      <Compile Include="Assets\Scripts\GraphData.cs" />
      <Compile Include="Assets\Scripts\GraphRepresentation2.cs" />
